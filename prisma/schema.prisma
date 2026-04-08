@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Class {
+  id        String    @id @default(cuid())
+  name      String
+  students  Student[]
+  subjects  Subject[]
+  createdAt DateTime  @default(now())
+}
+
+model Subject {
+  id          String  @id @default(cuid())
+  name        String
+  coefficient Float
+  classId     String
+  class       Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  grades      Grade[]
+}
+
+model Student {
+  id      String  @id @default(cuid())
+  name    String
+  classId String
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  grades  Grade[]
+}
+
+model Grade {
+  id        String  @id @default(cuid())
+  value     Float
+  studentId String
+  subjectId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, subjectId])
+}
