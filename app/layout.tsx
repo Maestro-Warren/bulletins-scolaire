@@ -24,11 +24,11 @@ export default function RootLayout({
         <header className="bg-indigo-700 text-white shadow-md">
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <Link href="/" className="text-xl font-bold tracking-tight">
-              📚 Bulletins Scolaires
+              📚 Bulletins Scolaires Groupe d'étude Les Leaders
             </Link>
           </div>
         </header>
-        <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8">
+        <main className="flex-1 max-w-8xl mx-auto w-full px-4 py-8">
           {children}
         </main>
         <footer className="text-center text-sm text-gray-400 py-4">

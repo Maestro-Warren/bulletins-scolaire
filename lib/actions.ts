@@ -26,6 +26,15 @@ export async function deleteClass(id: string) {
 
 // ─── Subject actions ───
 
+export async function getAllSubjectNames() {
+  const subjects = await prisma.subject.findMany({
+    select: { name: true, coefficient: true },
+    distinct: ["name"],
+    orderBy: { name: "asc" },
+  });
+  return subjects.map((s) => ({ name: s.name, coefficient: s.coefficient }));
+}
+
 export async function getClassWithDetails(classId: string) {
   return prisma.class.findUnique({
     where: { id: classId },
@@ -46,6 +55,21 @@ export async function addSubject(formData: FormData) {
   if (!name?.trim() || isNaN(coefficient) || coefficient <= 0) return;
   await prisma.subject.create({
     data: { name: name.trim(), coefficient, classId },
+  });
+  revalidatePath(`/classes/${classId}`);
+}
+
+export async function addSubjectsBatch(
+  classId: string,
+  subjects: { name: string; coefficient: number }[]
+) {
+  if (!classId || subjects.length === 0) return;
+  await prisma.subject.createMany({
+    data: subjects.map((s) => ({
+      name: s.name.trim(),
+      coefficient: s.coefficient,
+      classId,
+    })),
   });
   revalidatePath(`/classes/${classId}`);
 }
@@ -76,6 +100,12 @@ export async function addStudent(formData: FormData) {
   const name = formData.get("name") as string;
   if (!name?.trim()) return;
   await prisma.student.create({ data: { name: name.trim(), classId } });
+  revalidatePath(`/classes/${classId}`);
+}
+
+export async function updateStudent(id: string, classId: string, name: string) {
+  if (!name?.trim()) return;
+  await prisma.student.update({ where: { id }, data: { name: name.trim() } });
   revalidatePath(`/classes/${classId}`);
 }
 

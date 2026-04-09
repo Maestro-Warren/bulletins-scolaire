@@ -26,19 +26,16 @@ export function SubjectList({
   }
 
   return (
-    <ul className="space-y-2">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
       {subjects.map((subject) => (
-        <li
-          key={subject.id}
-          className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg"
-        >
+        <div key={subject.id}>
           {editing === subject.id ? (
-            <div className="flex gap-2 flex-1">
+            <div className="flex flex-col gap-1.5 p-2.5 bg-white border-2 border-indigo-300 rounded-xl shadow-sm">
               <input
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                className="px-2 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               <input
                 type="number"
@@ -46,42 +43,43 @@ export function SubjectList({
                 onChange={(e) => setEditCoef(Number(e.target.value))}
                 min="1"
                 step="1"
-                className="w-16 px-2 py-1 border border-gray-300 rounded text-sm"
+                className="px-2 py-1 border border-gray-300 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
-              <button
-                onClick={async () => {
-                  await updateSubject(subject.id, classId, editName, editCoef);
-                  setEditing(null);
-                }}
-                className="text-green-600 text-sm font-medium cursor-pointer"
-              >
-                ✓
-              </button>
-              <button
-                onClick={() => setEditing(null)}
-                className="text-gray-400 text-sm cursor-pointer"
-              >
-                ✕
-              </button>
+              <div className="flex gap-1">
+                <button
+                  onClick={async () => {
+                    await updateSubject(subject.id, classId, editName, editCoef);
+                    setEditing(null);
+                  }}
+                  className="flex-1 py-1 bg-green-600 text-white text-xs rounded-lg cursor-pointer hover:bg-green-700"
+                >
+                  ✓
+                </button>
+                <button
+                  onClick={() => setEditing(null)}
+                  className="flex-1 py-1 bg-gray-200 text-gray-600 text-xs rounded-lg cursor-pointer hover:bg-gray-300"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
           ) : (
-            <>
-              <div>
-                <span className="font-medium text-gray-700">
-                  {subject.name}
-                </span>
-                <span className="ml-2 text-sm text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
-                  Coef. {subject.coefficient}
-                </span>
-              </div>
-              <div className="flex gap-2">
+            <div className="group relative flex flex-col items-center p-3 bg-gradient-to-b from-indigo-50 to-white border border-indigo-100 rounded-xl hover:shadow-md hover:border-indigo-300 transition-all">
+              <span className="font-semibold text-gray-800 text-sm text-center leading-tight">
+                {subject.name}
+              </span>
+              <span className="mt-1 text-xs bg-indigo-100 text-indigo-700 font-bold px-2.5 py-0.5 rounded-full">
+                Coef. {subject.coefficient}
+              </span>
+              {/* Actions on hover */}
+              <div className="absolute top-1 right-1 hidden group-hover:flex gap-0.5">
                 <button
                   onClick={() => {
                     setEditing(subject.id);
                     setEditName(subject.name);
                     setEditCoef(subject.coefficient);
                   }}
-                  className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
+                  className="w-6 h-6 flex items-center justify-center rounded-full bg-white shadow text-gray-400 hover:text-indigo-600 text-xs cursor-pointer border border-gray-200"
                   title="Modifier"
                 >
                   ✎
@@ -92,16 +90,16 @@ export function SubjectList({
                       await deleteSubject(subject.id, classId);
                     }
                   }}
-                  className="text-red-400 hover:text-red-600 text-sm cursor-pointer"
+                  className="w-6 h-6 flex items-center justify-center rounded-full bg-white shadow text-gray-400 hover:text-red-600 text-xs cursor-pointer border border-gray-200"
                   title="Supprimer"
                 >
                   ✕
                 </button>
               </div>
-            </>
+            </div>
           )}
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 }

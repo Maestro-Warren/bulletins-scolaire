@@ -2,6 +2,7 @@ import { getStudentReport } from "@/lib/actions";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ReportPDF } from "./ReportPDF";
+import { PrintButton } from "./PrintButton";
 
 export const dynamic = "force-dynamic";
 
@@ -208,7 +209,8 @@ export default async function ReportPage({
         </div>
       </div>
 
-      <div className="text-center">
+      <div className="flex flex-wrap gap-4 justify-center">
+        <PrintButton />
         <ReportPDF
           studentName={student.name}
           className={student.class.name}
