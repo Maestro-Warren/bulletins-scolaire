@@ -71,8 +71,8 @@ export function SubjectList({
               <span className="mt-1 text-xs bg-indigo-100 text-indigo-700 font-bold px-2.5 py-0.5 rounded-full">
                 Coef. {subject.coefficient}
               </span>
-              {/* Actions on hover */}
-              <div className="absolute top-1 right-1 hidden group-hover:flex gap-0.5">
+              {/* Actions — always visible on mobile, hover on desktop */}
+              <div className="absolute top-1 right-1 flex sm:hidden group-hover:flex gap-0.5">
                 <button
                   onClick={() => {
                     setEditing(subject.id);
