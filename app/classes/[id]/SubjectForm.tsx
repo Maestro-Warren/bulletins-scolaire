@@ -28,13 +28,17 @@ export function SubjectForm({
   );
 
   useEffect(() => {
-    function handleClick(e: MouseEvent) {
+    function handleOutside(e: MouseEvent | TouchEvent) {
       if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
         setShowPicker(false);
       }
     }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener("mousedown", handleOutside);
+    document.addEventListener("touchstart", handleOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleOutside);
+      document.removeEventListener("touchstart", handleOutside);
+    };
   }, []);
 
   const toggleSelect = (name: string) => {
@@ -162,7 +166,7 @@ export function SubjectForm({
 
       {/* New subject form */}
       {showNewForm && (
-        <form action={handleAddNew} className="flex gap-2 items-center bg-gray-50 p-3 rounded-xl border border-gray-200">
+        <form action={handleAddNew} className="flex flex-col sm:flex-row gap-2 sm:items-center bg-gray-50 p-3 rounded-xl border border-gray-200">
           <input type="hidden" name="classId" value={classId} />
           <input
             type="text"
@@ -170,24 +174,27 @@ export function SubjectForm({
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Nom de la matière"
             required
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+            className="flex-1 px-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-base sm:text-sm"
           />
-          <input
-            type="number"
-            value={newCoef}
-            onChange={(e) => setNewCoef(e.target.value)}
-            placeholder="Coef."
-            required
-            min="1"
-            step="1"
-            className="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors text-sm cursor-pointer"
-          >
-            ✓
-          </button>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              value={newCoef}
+              onChange={(e) => setNewCoef(e.target.value)}
+              placeholder="Coef."
+              required
+              min="1"
+              step="1"
+              inputMode="numeric"
+              className="w-24 sm:w-20 px-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-base sm:text-sm"
+            />
+            <button
+              type="submit"
+              className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors text-sm cursor-pointer"
+            >
+              ✓ Ajouter
+            </button>
+          </div>
         </form>
       )}
     </div>

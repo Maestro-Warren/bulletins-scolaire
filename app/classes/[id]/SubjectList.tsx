@@ -28,24 +28,18 @@ export function SubjectList({
   const [gradeSubject, setGradeSubject] = useState<Subject | null>(null);
   const [search, setSearch] = useState("");
   const [savingKey, setSavingKey] = useState<string | null>(null);
+  const [toast, setToast] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Close modal on Escape or outside click
+  // Close modal on Escape key only (desktop)
   useEffect(() => {
     if (!gradeSubject) return;
     function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setGradeSubject(null);
-    }
-    function handleClick(e: MouseEvent) {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        setGradeSubject(null);
-      }
+      if (e.key === "Escape") { setGradeSubject(null); setSearch(""); }
     }
     document.addEventListener("keydown", handleKey);
-    document.addEventListener("mousedown", handleClick);
     return () => {
       document.removeEventListener("keydown", handleKey);
-      document.removeEventListener("mousedown", handleClick);
     };
   }, [gradeSubject]);
 
@@ -55,6 +49,8 @@ export function SubjectList({
     setSavingKey(studentId);
     await saveGrade(studentId, subjectId, num, classId);
     setSavingKey(null);
+    setToast(true);
+    setTimeout(() => setToast(false), 1500);
   };
 
   const filteredStudents = students.filter((s) =>
@@ -156,11 +152,15 @@ export function SubjectList({
 
       {/* Grade entry modal */}
       {gradeSubject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm sm:p-4" onClick={(e) => e.stopPropagation()}>
           <div
             ref={modalRef}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden"
+            className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-md max-h-[92vh] sm:max-h-[85vh] flex flex-col overflow-hidden"
           >
+            {/* Drag handle for mobile */}
+            <div className="sm:hidden flex justify-center pt-2 pb-1">
+              <div className="w-10 h-1 rounded-full bg-gray-300" />
+            </div>
             {/* Modal header */}
             <div className="bg-gradient-to-r from-indigo-600 to-indigo-500 px-5 py-4 flex items-center justify-between shrink-0">
               <div>
@@ -218,11 +218,12 @@ export function SubjectList({
                         min="0"
                         max="20"
                         step="0.5"
+                        inputMode="decimal"
                         defaultValue={grade?.value ?? ""}
                         onBlur={(e) =>
                           handleSaveGrade(student.id, gradeSubject.id, e.target.value)
                         }
-                        className={`w-20 px-3 py-2 border rounded-lg text-center text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                        className={`w-20 sm:w-20 px-3 py-2.5 sm:py-2 border rounded-lg text-center text-base sm:text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                           savingKey === student.id
                             ? "border-indigo-400 bg-indigo-50"
                             : grade
@@ -236,6 +237,13 @@ export function SubjectList({
                 })
               )}
             </div>
+
+            {/* Toast notification */}
+            {toast && (
+              <div className="mx-5 mb-1 flex items-center gap-2 px-4 py-2 bg-green-500 text-white text-sm font-medium rounded-lg animate-pulse shrink-0">
+                <span>✓</span> Note enregistrée !
+              </div>
+            )}
 
             {/* Footer */}
             <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between shrink-0">

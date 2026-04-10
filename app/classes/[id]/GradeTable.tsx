@@ -92,7 +92,7 @@ export function GradeTable({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200">
-              <th className="text-left py-3 px-2 font-semibold text-gray-600 min-w-[140px]">
+              <th className="text-left py-3 px-2 font-semibold text-gray-600 min-w-[120px] sm:min-w-[140px] sticky left-0 bg-white z-10">
                 Élève
               </th>
               {subjects.map((subject) => (
@@ -127,7 +127,7 @@ export function GradeTable({
               const dec = getDecision(avg);
               return (
                 <tr key={d.student.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-2 px-2">
+                  <td className="py-2 px-2 sticky left-0 bg-white z-10">
                     {editingStudent === d.student.id ? (
                       <div className="flex items-center gap-1">
                         <input
@@ -142,19 +142,19 @@ export function GradeTable({
                             if (e.key === "Escape") setEditingStudent(null);
                           }}
                           autoFocus
-                          className="w-full px-2 py-1 border border-indigo-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          className="w-full px-2 py-1.5 border border-indigo-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                         <button
                           onClick={async () => {
                             await updateStudent(d.student.id, classId, editName);
                             setEditingStudent(null);
                           }}
-                          className="text-green-600 text-sm cursor-pointer hover:text-green-800"
+                          className="text-green-600 text-base p-1 cursor-pointer hover:text-green-800"
                         >✓</button>
                       </div>
                     ) : (
                       <span
-                        className="font-medium text-gray-700 cursor-pointer hover:text-indigo-600"
+                        className="block font-medium text-gray-700 cursor-pointer hover:text-indigo-600 py-1 text-sm"
                         onClick={() => { setEditingStudent(d.student.id); setEditName(d.student.name); }}
                         title="Cliquer pour modifier le nom"
                       >
@@ -166,17 +166,18 @@ export function GradeTable({
                     const grade = getGrade(d.student, subject.id);
                     const key = `${d.student.id}-${subject.id}`;
                     return (
-                      <td key={subject.id} className="py-2 px-2 text-center">
+                      <td key={subject.id} className="py-2 px-1 sm:px-2 text-center">
                         <input
                           type="number"
                           min="0"
                           max="20"
                           step="0.5"
+                          inputMode="decimal"
                           defaultValue={grade?.value ?? ""}
                           onBlur={(e) =>
                             handleGradeChange(d.student.id, subject.id, e.target.value)
                           }
-                          className={`w-14 sm:w-16 px-1 sm:px-2 py-1 border rounded text-center text-sm
+                          className={`w-16 sm:w-16 px-1.5 sm:px-2 py-1.5 sm:py-1 border rounded text-center text-base sm:text-sm
                             ${saving === key ? "border-indigo-400 bg-indigo-50" : "border-gray-300"}
                             focus:outline-none focus:ring-2 focus:ring-indigo-500`}
                           placeholder="—"
