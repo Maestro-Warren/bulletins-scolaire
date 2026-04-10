@@ -150,3 +150,34 @@ export async function getStudentReport(studentId: string) {
   });
   return student;
 }
+
+// ─── Bulletin print status ───
+
+export async function toggleBulletinPrinted(studentId: string, classId: string, printed: boolean) {
+  await prisma.student.update({
+    where: { id: studentId },
+    data: { bulletinPrinted: printed },
+  });
+  revalidatePath(`/classes/${classId}/bulletins`);
+}
+
+export async function markBulletinsPrinted(studentIds: string[], classId: string) {
+  await prisma.student.updateMany({
+    where: { id: { in: studentIds } },
+    data: { bulletinPrinted: true },
+  });
+  revalidatePath(`/classes/${classId}/bulletins`);
+}
+
+export async function getClassBulletinData(classId: string) {
+  return prisma.class.findUnique({
+    where: { id: classId },
+    include: {
+      subjects: { orderBy: { name: "asc" } },
+      students: {
+        orderBy: { name: "asc" },
+        include: { grades: true },
+      },
+    },
+  });
+}

@@ -21,7 +21,7 @@ export default async function ClassPage({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <Link
           href="/"
           className="text-indigo-600 hover:text-indigo-800 font-medium"
@@ -29,6 +29,12 @@ export default async function ClassPage({
           ← Retour
         </Link>
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">{cls.name}</h1>
+        <Link
+          href={`/classes/${cls.id}/bulletins`}
+          className="ml-auto px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all shadow-md text-sm"
+        >
+          🎓 Bulletins & Impression
+        </Link>
       </div>
 
       {/* Subjects section — full width */}
@@ -37,7 +43,7 @@ export default async function ClassPage({
           📖 Matières & Coefficients
         </h2>
         <SubjectForm classId={cls.id} suggestions={existingSubjectNames} currentSubjects={cls.subjects.map(s => s.name)} />
-        <SubjectList subjects={cls.subjects} classId={cls.id} />
+        <SubjectList subjects={cls.subjects} classId={cls.id} students={cls.students} />
       </section>
 
       {/* Grades table with add student above */}

@@ -25,11 +25,12 @@ model Subject {
 }
 
 model Student {
-  id      String  @id @default(cuid())
-  name    String
-  classId String
-  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
-  grades  Grade[]
+  id              String  @id @default(cuid())
+  name            String
+  classId         String
+  bulletinPrinted Boolean @default(false)
+  class           Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+  grades          Grade[]
 }
 
 model Grade {
