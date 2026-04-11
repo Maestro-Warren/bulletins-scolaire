@@ -4,6 +4,7 @@ import Link from "next/link";
 import { SubjectList } from "./SubjectList";
 import { SubjectForm } from "./SubjectForm";
 import { GradeTable } from "./GradeTable";
+import { ClassHeader } from "./ClassHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,7 @@ export default async function ClassPage({
           >
             ← Retour
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">{cls.name}</h1>
+          <ClassHeader classId={cls.id} name={cls.name} />
         </div>
         <Link
           href={`/classes/${cls.id}/bulletins`}

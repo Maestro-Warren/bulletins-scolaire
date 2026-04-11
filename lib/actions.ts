@@ -19,6 +19,13 @@ export async function createClass(formData: FormData) {
   revalidatePath("/");
 }
 
+export async function updateClass(id: string, name: string) {
+  if (!name?.trim()) return;
+  await prisma.class.update({ where: { id }, data: { name: name.trim() } });
+  revalidatePath("/");
+  revalidatePath(`/classes/${id}`);
+}
+
 export async function deleteClass(id: string) {
   await prisma.class.delete({ where: { id } });
   revalidatePath("/");
