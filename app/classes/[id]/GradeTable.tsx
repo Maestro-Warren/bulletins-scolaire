@@ -12,18 +12,61 @@ export function GradeTable({
   students,
   subjects,
   classId,
-  className: clsName,
 }: {
   students: Student[];
   subjects: Subject[];
   classId: string;
-  className?: string;
 }) {
   const [saving, setSaving] = useState<string | null>(null);
   const [editingStudent, setEditingStudent] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
   const [toast, setToast] = useState(false);
   const tableRef = useRef<HTMLDivElement>(null);
+
+  const normalizeStudentName = (value: string) =>
+    value.trim().replace(/\s+/g, " ").toLocaleLowerCase("fr-FR");
+
+  const duplicateNameCounts = new Map<string, number>();
+  for (const student of students) {
+    const normalizedName = normalizeStudentName(student.name);
+    duplicateNameCounts.set(
+      normalizedName,
+      (duplicateNameCounts.get(normalizedName) ?? 0) + 1
+    );
+  }
+
+  const subjectEmptyCounts = new Map<string, number>();
+  for (const subject of subjects) {
+    const emptyCount = students.reduce((count, student) => {
+      const hasGrade = student.grades.some((grade) => grade.subjectId === subject.id);
+      return count + (hasGrade ? 0 : 1);
+    }, 0);
+
+    subjectEmptyCounts.set(subject.id, emptyCount);
+  }
+
+  const getEmptyGradeCount = (student: Student) =>
+    subjects.reduce((count, subject) => {
+      const hasGrade = student.grades.some((grade) => grade.subjectId === subject.id);
+      return count + (hasGrade ? 0 : 1);
+    }, 0);
+
+  const saveStudentName = async (studentId: string) => {
+    const result = await updateStudent(studentId, classId, editName);
+
+    if (!result.ok) {
+      setNameError(
+        result.error === "duplicate"
+          ? "Nom deja utilise dans cette classe."
+          : "Le nom de l'eleve est requis."
+      );
+      return;
+    }
+
+    setNameError(null);
+    setEditingStudent(null);
+  };
 
   const getGrade = useCallback(
     (student: Student, subjectId: string) => {
@@ -100,9 +143,14 @@ export function GradeTable({
                   key={subject.id}
                   className="text-center py-3 px-2 font-semibold text-gray-600"
                 >
-                  <div className="text-xs sm:text-sm">{subject.name}</div>
-                  <div className="text-xs text-indigo-500 font-normal">
-                    Coef. {subject.coefficient}
+                  <div className="flex flex-col items-center gap-1.5">
+                    <span className="rounded-full border border-slate-200/80 bg-white/65 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 shadow-sm backdrop-blur-sm">
+                      {subjectEmptyCounts.get(subject.id) ?? 0} vide(s)
+                    </span>
+                    <div className="text-xs sm:text-sm">{subject.name}</div>
+                    <div className="text-xs text-indigo-500 font-normal">
+                      Coef. {subject.coefficient}
+                    </div>
                   </div>
                 </th>
               ))}
@@ -125,41 +173,67 @@ export function GradeTable({
               const avg = d.average;
               const r = getRank(d.student.id);
               const dec = getDecision(avg);
+              const duplicateCount =
+                duplicateNameCounts.get(normalizeStudentName(d.student.name)) ?? 0;
+              const emptyGradeCount = getEmptyGradeCount(d.student);
               return (
                 <tr key={d.student.id} className="border-b border-gray-100 hover:bg-gray-50">
                   <td className="py-2 px-2 sticky left-0 bg-white z-10">
                     {editingStudent === d.student.id ? (
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="text"
-                          value={editName}
-                          onChange={(e) => setEditName(e.target.value)}
-                          onKeyDown={async (e) => {
-                            if (e.key === "Enter") {
-                              await updateStudent(d.student.id, classId, editName);
-                              setEditingStudent(null);
-                            }
-                            if (e.key === "Escape") setEditingStudent(null);
-                          }}
-                          autoFocus
-                          className="w-full px-2 py-1.5 border border-indigo-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                        <button
-                          onClick={async () => {
-                            await updateStudent(d.student.id, classId, editName);
-                            setEditingStudent(null);
-                          }}
-                          className="text-green-600 text-base p-1 cursor-pointer hover:text-green-800"
-                        >✓</button>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="text"
+                            value={editName}
+                            onChange={(e) => {
+                              setEditName(e.target.value);
+                              if (nameError) {
+                                setNameError(null);
+                              }
+                            }}
+                            onKeyDown={async (e) => {
+                              if (e.key === "Enter") {
+                                await saveStudentName(d.student.id);
+                              }
+                              if (e.key === "Escape") {
+                                setNameError(null);
+                                setEditingStudent(null);
+                              }
+                            }}
+                            autoFocus
+                            className="w-full px-2 py-1.5 border border-indigo-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          />
+                          <button
+                            onClick={async () => {
+                              await saveStudentName(d.student.id);
+                            }}
+                            className="text-green-600 text-base p-1 cursor-pointer hover:text-green-800"
+                          >✓</button>
+                        </div>
+                        {nameError && <p className="text-xs text-amber-700">{nameError}</p>}
                       </div>
                     ) : (
-                      <span
-                        className="block font-medium text-gray-700 cursor-pointer hover:text-indigo-600 py-1 text-sm"
-                        onClick={() => { setEditingStudent(d.student.id); setEditName(d.student.name); }}
-                        title="Cliquer pour modifier le nom"
-                      >
-                        {d.student.name}
-                      </span>
+                      <div className="flex flex-wrap items-center gap-2 py-1">
+                        <span
+                          className="block font-medium text-gray-700 cursor-pointer hover:text-indigo-600 text-sm"
+                          onClick={() => {
+                            setEditingStudent(d.student.id);
+                            setEditName(d.student.name);
+                            setNameError(null);
+                          }}
+                          title="Cliquer pour modifier le nom"
+                        >
+                          {d.student.name}
+                        </span>
+                        {duplicateCount > 1 && (
+                          <span className="rounded-full border border-amber-300/60 bg-amber-100/50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 backdrop-blur-sm">
+                            Doublon x{duplicateCount}
+                          </span>
+                        )}
+                        <span className="rounded-full border border-slate-200/80 bg-white/65 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 shadow-sm backdrop-blur-sm">
+                          {emptyGradeCount} vide(s)
+                        </span>
+                      </div>
                     )}
                   </td>
                   {subjects.map((subject) => {

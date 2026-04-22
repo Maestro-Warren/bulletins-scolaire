@@ -1,4 +1,6 @@
 import { getStudentReport } from "@/lib/actions";
+import { LOGO_IMAGE, SCHOOL_NAME } from "@/lib/reportBranding";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ReportPDF } from "./ReportPDF";
@@ -46,13 +48,11 @@ export default async function ReportPage({
   let totalNotes = 0;
   let totalCoef = 0;
   let totalNotesTimesCoef = 0;
-  let gradedCount = 0;
   for (const s of subjects) {
     if (s.grade !== null) {
       totalNotes += s.grade;
       totalCoef += s.coefficient;
       totalNotesTimesCoef += s.grade * s.coefficient;
-      gradedCount++;
     }
   }
   const average = totalCoef > 0 ? totalNotesTimesCoef / totalCoef : null;
@@ -92,13 +92,29 @@ export default async function ReportPage({
       {/* Report Card Preview */}
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 max-w-3xl mx-auto overflow-hidden mb-6">
         {/* Header band */}
-        <div className="bg-indigo-700 text-white px-8 py-6 text-center">
-          <h1 className="text-2xl font-bold tracking-wide">
-            BULLETIN SCOLAIRE
-          </h1>
-          <p className="text-indigo-200 mt-1 text-sm">
-            Année scolaire {new Date().getFullYear() - 1}–{new Date().getFullYear()}
-          </p>
+        <div className="bg-indigo-700 text-white px-8 py-6">
+          <div className="flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:text-left">
+            <div className="rounded-full border border-white/20 bg-white/10 p-3 backdrop-blur-sm">
+              <Image
+                src={LOGO_IMAGE}
+                alt={`Logo ${SCHOOL_NAME}`}
+                width={72}
+                height={72}
+                className="h-16 w-16"
+              />
+            </div>
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.28em] text-indigo-200">
+                {SCHOOL_NAME}
+              </p>
+              <h1 className="text-2xl font-bold tracking-wide">
+                BULLETIN SCOLAIRE
+              </h1>
+              <p className="text-indigo-200 mt-1 text-sm">
+                Année scolaire {new Date().getFullYear() - 1}–{new Date().getFullYear()}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="p-8">
@@ -199,7 +215,7 @@ export default async function ReportPage({
           {/* Footer */}
           <div className="flex justify-between items-end pt-4 border-t border-gray-200">
             <p className="text-xs text-gray-400">
-              Groupe d&apos;étude Les Leaders — {new Date().toLocaleDateString("fr-FR")}
+              {SCHOOL_NAME} — {new Date().toLocaleDateString("fr-FR")}
             </p>
             <div className="text-center">
               <div className="w-40 border-b border-gray-300 mb-1"></div>

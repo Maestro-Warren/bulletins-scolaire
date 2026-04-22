@@ -3,6 +3,55 @@
 import { prisma } from "./prisma";
 import { revalidatePath } from "next/cache";
 
+type StudentMutationResult =
+  | { ok: true }
+  | { ok: false; error: "required" | "duplicate" };
+
+function normalizeStudentName(name: string) {
+  return name.trim().replace(/\s+/g, " ").toLocaleLowerCase("fr-FR");
+}
+
+async function findDuplicateStudentName(
+  classId: string,
+  name: string,
+  excludeStudentId?: string
+) {
+  const students = await prisma.student.findMany({
+    where: {
+      classId,
+      ...(excludeStudentId ? { id: { not: excludeStudentId } } : {}),
+    },
+    select: { id: true, name: true },
+  });
+
+  const normalizedName = normalizeStudentName(name);
+
+  return students.find(
+    (student) => normalizeStudentName(student.name) === normalizedName
+  );
+}
+
+export async function createStudentInClass(
+  classId: string,
+  name: string
+): Promise<StudentMutationResult> {
+  const trimmedName = name.trim().replace(/\s+/g, " ");
+
+  if (!trimmedName) {
+    return { ok: false, error: "required" };
+  }
+
+  const duplicate = await findDuplicateStudentName(classId, trimmedName);
+  if (duplicate) {
+    return { ok: false, error: "duplicate" };
+  }
+
+  await prisma.student.create({ data: { name: trimmedName, classId } });
+  revalidatePath(`/classes/${classId}`);
+
+  return { ok: true };
+}
+
 // ─── Class actions ───
 
 export async function getClasses() {
@@ -105,15 +154,25 @@ export async function updateSubject(
 export async function addStudent(formData: FormData) {
   const classId = formData.get("classId") as string;
   const name = formData.get("name") as string;
-  if (!name?.trim()) return;
-  await prisma.student.create({ data: { name: name.trim(), classId } });
-  revalidatePath(`/classes/${classId}`);
+  return createStudentInClass(classId, name);
 }
 
 export async function updateStudent(id: string, classId: string, name: string) {
-  if (!name?.trim()) return;
-  await prisma.student.update({ where: { id }, data: { name: name.trim() } });
+  const trimmedName = name.trim().replace(/\s+/g, " ");
+
+  if (!trimmedName) {
+    return { ok: false, error: "required" } satisfies StudentMutationResult;
+  }
+
+  const duplicate = await findDuplicateStudentName(classId, trimmedName, id);
+  if (duplicate) {
+    return { ok: false, error: "duplicate" } satisfies StudentMutationResult;
+  }
+
+  await prisma.student.update({ where: { id }, data: { name: trimmedName } });
   revalidatePath(`/classes/${classId}`);
+
+  return { ok: true } satisfies StudentMutationResult;
 }
 
 export async function deleteStudent(id: string, classId: string) {

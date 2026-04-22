@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <style>
+      .line {
+        stroke: #5b72ff;
+        stroke-width: 5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .leaf {
+        fill: rgba(91, 114, 255, 0.16);
+        stroke: #5b72ff;
+        stroke-width: 3;
+      }
+    </style>
+  </defs>
+
+  <g class="line">
+    <circle cx="128" cy="92" r="78" />
+    <circle cx="128" cy="92" r="98" />
+    <path d="M88 73c12 10 28 6 40 11v53c-12-6-28-2-40-11V73Z" />
+    <path d="M168 73c-12 10-28 6-40 11v53c12-6 28-2 40-11V73Z" />
+    <path d="M128 84v53" />
+    <path d="M92 137h72" />
+    <path d="M118 137l10 8 10-8" />
+    <path d="M49 92h11" />
+    <path d="M196 92h11" />
+    <path d="M40 92l5 5 5-5-5-5-5 5Z" />
+    <path d="M216 92l5 5 5-5-5-5-5 5Z" />
+  </g>
+
+  <g transform="translate(34 144)">
+    <path class="line" d="M0 4c19 31 50 57 91 76" />
+    <ellipse class="leaf" cx="8" cy="1" rx="7" ry="14" transform="rotate(-38 8 1)" />
+    <ellipse class="leaf" cx="18" cy="15" rx="7" ry="14" transform="rotate(-30 18 15)" />
+    <ellipse class="leaf" cx="29" cy="27" rx="7" ry="14" transform="rotate(-22 29 27)" />
+    <ellipse class="leaf" cx="41" cy="38" rx="7" ry="14" transform="rotate(-12 41 38)" />
+    <ellipse class="leaf" cx="53" cy="48" rx="7" ry="14" transform="rotate(-2 53 48)" />
+    <ellipse class="leaf" cx="65" cy="58" rx="7" ry="14" transform="rotate(10 65 58)" />
+    <ellipse class="leaf" cx="77" cy="66" rx="7" ry="14" transform="rotate(22 77 66)" />
+    <ellipse class="leaf" cx="89" cy="73" rx="7" ry="14" transform="rotate(34 89 73)" />
+  </g>
+
+  <g transform="translate(222 144) scale(-1 1)">
+    <path class="line" d="M0 4c19 31 50 57 91 76" />
+    <ellipse class="leaf" cx="8" cy="1" rx="7" ry="14" transform="rotate(-38 8 1)" />
+    <ellipse class="leaf" cx="18" cy="15" rx="7" ry="14" transform="rotate(-30 18 15)" />
+    <ellipse class="leaf" cx="29" cy="27" rx="7" ry="14" transform="rotate(-22 29 27)" />
+    <ellipse class="leaf" cx="41" cy="38" rx="7" ry="14" transform="rotate(-12 41 38)" />
+    <ellipse class="leaf" cx="53" cy="48" rx="7" ry="14" transform="rotate(-2 53 48)" />
+    <ellipse class="leaf" cx="65" cy="58" rx="7" ry="14" transform="rotate(10 65 58)" />
+    <ellipse class="leaf" cx="77" cy="66" rx="7" ry="14" transform="rotate(22 77 66)" />
+    <ellipse class="leaf" cx="89" cy="73" rx="7" ry="14" transform="rotate(34 89 73)" />
+  </g>
+</svg>

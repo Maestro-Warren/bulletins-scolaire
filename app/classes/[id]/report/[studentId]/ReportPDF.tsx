@@ -2,6 +2,7 @@
 
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { getLogoPngDataUrl, SCHOOL_NAME } from "@/lib/reportBranding";
 
 type SubjectData = {
   name: string;
@@ -37,14 +38,22 @@ export function ReportPDF({
   classAvgBest: number | null;
   classAvgWorst: number | null;
 }) {
-  const generatePDF = () => {
+  const generatePDF = async () => {
     const doc = new jsPDF();
     const indigo = [79, 70, 229] as const;
     const now = new Date();
+    const logoDataUrl = await getLogoPngDataUrl(256).catch(() => "");
 
     // ── Header band ──
     doc.setFillColor(...indigo);
     doc.rect(0, 0, 210, 38, "F");
+    if (logoDataUrl) {
+      doc.addImage(logoDataUrl, "PNG", 16, 7, 23, 23);
+    }
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(224, 231, 255);
+    doc.text(SCHOOL_NAME, 105, 10, { align: "center" });
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(255, 255, 255);
@@ -233,7 +242,7 @@ export function ReportPDF({
     doc.setTextColor(156, 163, 175);
     doc.setFont("helvetica", "normal");
     doc.text(
-      `Groupe d'étude Les Leaders — ${now.toLocaleDateString("fr-FR")}`,
+      `${SCHOOL_NAME} — ${now.toLocaleDateString("fr-FR")}`,
       14,
       footerY + 8
     );

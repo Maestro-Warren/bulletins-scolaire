@@ -1,10 +1,11 @@
-import { getClassWithDetails, addStudent, getAllSubjectNames } from "@/lib/actions";
+import { getClassWithDetails, getAllSubjectNames } from "@/lib/actions";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { SubjectList } from "./SubjectList";
 import { SubjectForm } from "./SubjectForm";
 import { GradeTable } from "./GradeTable";
 import { ClassHeader } from "./ClassHeader";
+import { AddStudentForm } from "./AddStudentForm";
 
 export const dynamic = "force-dynamic";
 
@@ -55,22 +56,7 @@ export default async function ClassPage({
           <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
             📝 Notes (/20)
           </h2>
-          <form action={addStudent} className="flex gap-2 w-full sm:w-auto">
-            <input type="hidden" name="classId" value={cls.id} />
-            <input
-              type="text"
-              name="name"
-              placeholder="Ajouter un élève..."
-              required
-              className="flex-1 sm:flex-none sm:w-56 px-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-base sm:text-sm"
-            />
-            <button
-              type="submit"
-              className="px-4 py-2.5 sm:py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors text-sm cursor-pointer whitespace-nowrap"
-            >
-              + Élève
-            </button>
-          </form>
+          <AddStudentForm classId={cls.id} />
         </div>
 
         {cls.subjects.length > 0 && cls.students.length > 0 ? (
@@ -78,7 +64,6 @@ export default async function ClassPage({
             students={cls.students}
             subjects={cls.subjects}
             classId={cls.id}
-            className={cls.name}
           />
         ) : (
           <p className="text-gray-400 text-sm py-4 text-center">
