@@ -144,7 +144,7 @@ export function GradeTable({
                   className="text-center py-3 px-2 font-semibold text-gray-600"
                 >
                   <div className="flex flex-col items-center gap-1.5">
-                    <span className="rounded-full border border-slate-200/80 bg-white/65 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500 shadow-sm backdrop-blur-sm">
+                    <span className="rounded-full border border-slate-200/80 bg-white/65 px-2.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-slate-500 shadow-sm backdrop-blur-sm">
                       {subjectEmptyCounts.get(subject.id) ?? 0} vide(s)
                     </span>
                     <div className="text-xs sm:text-sm">{subject.name}</div>
